@@ -137,3 +137,12 @@ def session_scope():
         raise
     finally:
         session.close()
+
+def get_session():
+    """
+    Obtiene una nueva sesión de base de datos (alias para compatibilidad)
+    
+    Returns:
+        Session: Nueva sesión de SQLAlchemy
+    """
+    return db_manager.get_session()

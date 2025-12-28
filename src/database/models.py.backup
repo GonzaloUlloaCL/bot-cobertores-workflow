@@ -6,7 +6,7 @@ Define las tablas como clases Python para fácil manejo
 from datetime import datetime
 from sqlalchemy import (
     Column, Integer, String, Text, DateTime, Boolean, 
-    Enum, DECIMAL, ForeignKey, JSON, Index, Float
+    Enum, DECIMAL, ForeignKey, JSON, Index
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -99,12 +99,6 @@ class Tarea(Base):
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     
-    # Nuevas columnas de aprendizaje
-    confianza_clasificacion = Column(Float)
-    metodo_clasificacion = Column(String(50), default='manual')
-    requiere_revision_humana = Column(Boolean, default=False)
-    razon_revision = Column(String(255))
-    
     # Relaciones
     email = relationship('EmailProcesado', back_populates='tareas')
     alertas = relationship('Alerta', back_populates='tarea')
@@ -135,11 +129,6 @@ class ArchivoAdjunto(Base):
     extracted_data = Column(JSON)
     processed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now)
-    
-    # Nuevas columnas de aprendizaje
-    confidence_score = Column(Float, default=0.0)
-    requires_review = Column(Boolean, default=False)
-    review_reason = Column(String(255))
     
     # Relaciones
     email = relationship('EmailProcesado', back_populates='adjuntos')
@@ -234,9 +223,61 @@ class LogSistema(Base):
     def __repr__(self):
         return f"<LogSistema(nivel='{self.nivel}', modulo='{self.modulo}', mensaje='{self.mensaje[:50]}...')>"
 
+# =============================================================================
+# SESSION MANAGEMENT
+# =============================================================================
+
+from contextlib import contextmanager
+from sqlalchemy.orm import sessionmaker
+#from .connection import get_engine
+
+# Crear session factory
+#Session = sessionmaker(bind=get_engine())
+
+
+@contextmanager
+def session_scope():
+    """
+    Context manager para manejar sesiones de SQLAlchemy de forma segura.
+    
+    Usage:
+        with session_scope() as session:
+            user = session.query(User).first()
+            session.add(new_object)
+            # Commit automático al salir
+    """
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
+
+def get_session():
+    """
+    Obtiene una nueva sesión de base de datos.
+    Recuerda cerrarla manualmente después de usarla.
+    
+    Returns:
+        Session: Nueva sesión de SQLAlchemy
+    """
+    return Session()
+
+# =============================================================================
+# IMPORT SESSION SCOPE FROM CONNECTION
+# =============================================================================
+
+from .connection import session_scope
+
+# Exportar para que esté disponible al importar desde models
+__all__ = ['Base', 'EmailProcesado', 'Tarea', 'ArchivoAdjunto', 'Alerta', 'session_scope']
 
 # ============================================
-# MODELOS DE APRENDIZAJE
+# MODELOS DE APRENDIZAJE - AGREGAR AL FINAL
 # ============================================
 
 class SenderProfile(Base):
