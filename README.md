@@ -1,437 +1,189 @@
-        # 🤖 Bot de Cobertores - Sistema de Automatización con IA
+🤖 OpsMail AI – Intelligent Email-to-Workflow Automation
 
-Sistema inteligente de procesamiento de emails operacionales con **aprendizaje automático de patrones** y extracción de datos usando IA.
+Sistema de automatización operacional que transforma correos electrónicos no estructurados en flujos de trabajo, combinando aprendizaje histórico, reglas dinámicas e IA como fallback inteligente.
 
-[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.1-green.svg)](https://flask.palletsprojects.com/)
-[![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-orange.svg)](https://ai.google.dev/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)](https://www.mysql.com/)
+Stack: Python · Flask · Google Gemini · MySQL
 
-## 📋 Descripción
+📋 Descripción
 
-Proyecto de automatización operacional que **aprende de tu operación** para procesar correos electrónicos de solicitudes de producción. El sistema extrae datos estructurados usando IA, genera reglas automáticas basadas en patrones históricos, y provee un dashboard de gestión inteligente.
+OpsMail AI es una plataforma diseñada para organizaciones que reciben solicitudes operativas por correo electrónico en formatos libres y poco estructurados.
 
-**Problema resuelto:** Empresas agrícolas/manufactureras reciben solicitudes por email en formatos no estructurados. La entrada manual consume 10-15 horas/semana y genera errores.
+El sistema analiza correos históricos para aprender patrones reales de operación, genera reglas automáticas con scoring de confianza y luego procesa nuevos correos de forma autónoma, reduciendo tiempo operativo, errores manuales y dependencia de IA generativa.
 
-**Solución:** Sistema inteligente que:
+Proyecto desarrollado como demo técnica y de portafolio, validado en escenarios simulados que replican flujos operativos reales (producción, logística, servicios).
 
-* 📧 Captura emails de Gmail con etiqueta específica
-* 🧠 **Aprende patrones de emails históricos** (remitentes, urgencias, tipos de solicitud)
-* ⚙️ **Genera reglas automáticas** basadas en comportamiento real
-* 🤖 Extrae datos usando IA (Google Gemini) con fallback inteligente
-* 📊 Procesa adjuntos Excel/PDF con scoring de confianza
-* 💾 Almacena en base de datos MySQL
-* 📈 Dashboard web para seguimiento y revisión
+❗ Problema
 
-## 🎯 Caso de Uso Real
+Muchas áreas operativas reciben solicitudes por email sin estructura estándar:
 
-Basado en operaciones reales del área de Cobertores en Agrosystems (2024-2025). El sistema procesa solicitudes como:
+Formatos variables
 
-```
-Asunto: Solicitud Cobertor - URGENTE
-De: produccion@empresa.cl
+Información incompleta
 
-Necesito cobertor para:
-- Cuartel: 15
-- Hileras: 8
-- Largo: 120 metros
-- Código: COB-001
-- Prioridad: ALTA
-```
+Prioridades poco claras
 
-**Output automatizado:**
+Procesamiento manual (10–15 hrs/semana)
 
-* ✅ Tarea creada en BD
-* ✅ Prioridad detectada automáticamente (por reglas aprendidas o IA)
-* ✅ Scoring de confianza en la clasificación
-* ✅ Alerta si requiere revisión humana
-* ✅ Email marcado como procesado
+Alto riesgo de errores
 
-## 🏗️ Arquitectura
+✅ Solución
 
-```
-        Fase 0: Aprendizaje              Fase 1: Operación
-┌─────────────────────────────┐    ┌──────────────────────────┐
-│  Gmail Histórico (1-12m)    │    │   Gmail (emails nuevos)  │
-│            ↓                │    │           ↓              │
-│  historical_scraper.py      │    │   email_processor.py     │
-│            ↓                │    │           ↓              │
-│  Análisis de patrones       │    │   rules_engine.py        │
-│  - Remitentes               │    │           ↓              │
-│  - Urgencias                │    │   ¿Regla conocida?       │
-│  - Tipos de solicitud       │    │   ├─ Sí → Aplicar regla  │
-│            ↓                │    │   └─ No → Usar Gemini    │
-│  Base de Conocimiento       │────┤           ↓              │
-│  - sender_profiles          │    │   Tarea en BD            │
-│  - learned_rules (16)       │    │   + Score confianza      │
-└─────────────────────────────┘    └──────────────────────────┘
-```
+OpsMail AI automatiza el proceso completo:
 
-### Stack Tecnológico
+📧 Captura emails desde Gmail mediante etiquetas
+🧠 Aprende patrones históricos de operación
+⚙️ Genera reglas automáticas con scoring de confianza
+🤖 Usa IA (Gemini) solo cuando es necesario
+📊 Procesa adjuntos Excel/PDF
+💾 Almacena resultados en base de datos
+📈 Dashboard web para seguimiento y control
 
-| Componente | Tecnología | Propósito |
-| --- | --- | --- |
-| **Captura de Emails** | Gmail API (OAuth 2.0) | Scraping seguro de emails |
-| **Aprendizaje Automático** | Python + SQLAlchemy | Análisis de patrones históricos |
-| **IA Processing** | Google Gemini 2.5 Flash | Extracción inteligente de datos (fallback) |
-| **Motor de Reglas** | Python (rules_engine.py) | Clasificación basada en conocimiento |
-| **Procesamiento de Archivos** | Pandas, OpenPyXL, PyPDF2 | Lectura de Excel/PDF con scoring |
-| **Base de Datos** | MySQL 8.0 + SQLAlchemy | 15 tablas (operación + conocimiento) |
-| **Dashboard** | Flask + HTML/CSS/JS | Visualización web responsive |
-| **Infraestructura** | Python 3.13, Virtual Env | Entorno de desarrollo |
+🧠 Sistema de Aprendizaje – Fase 0 (Diferenciador clave)
 
-## 🧠 Sistema de Aprendizaje (Nuevo)
+Antes de operar, el sistema ejecuta una fase de aprendizaje histórico:
 
-### Fase 0: Análisis Histórico
-
-El sistema analiza emails pasados para aprender patrones operativos:
-
-```bash
 python src/learning/historical_scraper.py --months 6
-```
 
-**Qué aprende:**
+¿Qué aprende?
 
-* **Perfiles de remitentes:** Identifica quién envía qué tipo de solicitudes
-* **Patrones de urgencia:** Detecta keywords y comportamiento asociado a prioridad
-* **Reglas automáticas:** Genera reglas con scoring de confianza (ej: "emails de proveedor X siempre son urgentes")
-* **Hilos de conversación:** Analiza patrones de escalamiento y coordinación
+👥 Perfiles de remitentes
 
-**Resultados de prueba (1 mes de emails):**
+⚠️ Patrones de urgencia y prioridad
 
-* 📧 **266 emails** analizados
-* 👥 **26 remitentes** identificados
-* ⚙️ **16 reglas** automáticas generadas
-* 🎯 **Confianza promedio:** 85%
+🔁 Tipos recurrentes de solicitudes
 
-### Fase 1: Operación Inteligente
+⚙️ Reglas automáticas con scoring de confianza
+
+🧵 Patrones de hilos y escalamiento
+
+📌 El objetivo es que el sistema aprenda el “lenguaje operacional” propio de cada organización antes de automatizar.
+
+⚙️ Fase 1 – Operación Inteligente
 
 Cuando llega un email nuevo:
 
-1. **Rules Engine** consulta conocimiento aprendido
-2. Si confianza > 75% → **Aplica regla directa** (sin usar IA, más rápido, gratis)
-3. Si confianza < 75% → **Fallback a Gemini IA**
-4. Si confianza < 50% → **Marca para revisión humana**
+Consulta reglas aprendidas
 
-**Beneficios:**
+Si confianza > 75% → aplica regla directa
 
-* ⚡ **Respuesta más rápida** (reglas vs llamadas API)
-* 💰 **Menor costo** (menos llamadas a Gemini)
-* 🎯 **Mayor precisión** (aprende de tu operación específica)
-* 🔍 **Explicabilidad** ("clasificado por regla X con 92% confianza")
+Si confianza < 75% → fallback a IA (Gemini)
 
-## 📊 Resultados y Métricas
+Si confianza < 50% → revisión humana
 
-**Demo Técnica (7 emails procesados):**
+Beneficios
 
-* ✅ **7 tareas creadas** (100% de conversión)
-* ✅ **< 3 segundos** por email procesado
-* ✅ **$0.0002 USD** costo por email (cuando usa Gemini)
+⚡ Procesamiento rápido
+💰 Menor costo en llamadas a IA
+🎯 Mayor precisión contextual
+🔍 Clasificación explicable
+📊 Visibilidad completa
 
-**Sistema de Aprendizaje (266 emails históricos):**
+🎯 Ejemplo de Caso de Uso (Genérico)
 
-* ✅ **26 perfiles** de remitentes creados
-* ✅ **16 reglas** automáticas con 70-100% confianza
-* ✅ **0 falsos positivos** en clasificación de urgencia
-* ✅ **Sistema autónomo** para emails recurrentes
+Asunto: Solicitud urgente de producción
+Contenido:
 
-**Ahorro estimado para cliente real:**
+Área: Planta Norte
 
-* 10-15 horas/semana en entrada manual
-* 95%+ reducción de errores
-* 60% reducción en llamadas a API de IA
-* Visibilidad completa de solicitudes
+Ítem: Producto X
 
-## 🚀 Instalación
+Cantidad: 1.200 unidades
 
-### Prerrequisitos
+Fecha requerida: 48 hrs
 
-* Python 3.13+
-* MySQL 8.0+
-* Cuenta de Google (Gmail API)
-* API Key de Google Gemini
+Resultado:
 
-### Configuración
+Tarea creada en BD
 
-1. **Clonar repositorio**
+Prioridad detectada automáticamente
 
-```bash
-git clone https://github.com/GonzaloUlloaCL/bot-cobertores-workflow.git
-cd bot-cobertores-workflow
-```
+Score de confianza
 
-2. **Crear entorno virtual**
+Alerta si requiere revisión humana
 
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-.\venv\Scripts\activate   # Windows
-```
+📊 Resultados de Prueba
 
-3. **Instalar dependencias**
+Escenario de validación técnica:
 
-```bash
-pip install -r requirements.txt
-```
+📧 266 emails analizados
 
-4. **Configurar variables de entorno**
+👥 26 perfiles de remitentes
 
-Crear archivo `.env` en la raíz:
+⚙️ 16 reglas automáticas generadas
 
-```env
-# Gmail API
-GMAIL_CLIENT_ID=tu_client_id
-GMAIL_CLIENT_SECRET=tu_client_secret
-GMAIL_LABEL=bot-cobertores
+🎯 Confianza promedio: 85%
 
-# Gemini AI
-GEMINI_API_KEY=tu_gemini_api_key
+⏱️ < 3 segundos por email
 
-# MySQL
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=bot_cobertores
-DB_USER=root
-DB_PASSWORD=tu_password
+💸 ~$0.0002 USD por email (cuando usa IA)
 
-# Dominio interno (para identificar autores internos)
-INTERNAL_DOMAIN=@tuempresa.com
-```
+🏗️ Arquitectura
+Fase 0: Aprendizaje Histórico          Fase 1: Operación
+┌─────────────────────────────┐    ┌──────────────────────────┐
+│ Emails históricos           │    │ Emails nuevos            │
+│ ↓                           │    │ ↓                        │
+│ historical_scraper.py       │    │ email_processor.py       │
+│ ↓                           │    │ ↓                        │
+│ Análisis de patrones        │    │ rules_engine.py          │
+│ Reglas automáticas          │────┤ ¿Regla conocida?         │
+│ Base de conocimiento        │    │ ├─ Sí → Regla            │
+└─────────────────────────────┘    │ └─ No → IA (Gemini)      │
+                                   └──────────────────────────┘
 
-5. **Configurar Gmail API**
+🗄️ Base de Datos
 
-* Ir a [Google Cloud Console](https://console.cloud.google.com/)
-* Crear proyecto y habilitar Gmail API
-* Descargar `credentials.json` y colocar en la raíz
+15 tablas en total
 
-6. **Crear base de datos**
+8 operativas (emails, tareas, alertas, logs)
 
-```bash
-mysql -u root -p
-CREATE DATABASE bot_cobertores;
-```
-
-7. **Ejecutar migraciones**
+7 de conocimiento (perfiles, reglas, patrones, feedback)
 
-```bash
-python scripts/migrate.py
-```
-
-Esto crea **15 tablas**:
-
-* 8 tablas operativas (emails, tareas, alertas, etc.)
-* 7 tablas de conocimiento (sender_profiles, learned_rules, etc.)
-
-## 💻 Uso
-
-### 1. Fase de Aprendizaje (Primera vez)
-
-Analiza emails históricos para aprender patrones:
-
-```bash
-python src/learning/historical_scraper.py --months 6
-```
-
-**Opciones:**
-
-* `--months N`: Analizar últimos N meses (default: 6)
-* `--mode full`: Análisis completo (default)
-* `--mode senders-only`: Solo perfiles de remitentes
-
-**Output:**
-
-```
-🚀 Iniciando análisis histórico de Gmail...
-📧 Emails analizados: 450
-👥 Remitentes identificados: 45
-⚙️  Reglas generadas: 28
-🔗 Hilos analizados: 120
-```
-
-### 2. Procesar Emails Nuevos
-
-```bash
-python src/data_processing/email_processor.py
-```
-
-El sistema:
-
-1. Captura emails con etiqueta `bot-cobertores`
-2. Consulta reglas aprendidas
-3. Clasifica (regla o IA según confianza)
-4. Crea tareas en BD
-5. Genera alertas si requiere revisión
-
-### 3. Iniciar Dashboard
-
-```bash
-python src/dashboard/app.py
-```
-
-Acceder a: `http://localhost:5000`
-
-**Dashboard muestra:**
-
-* Tareas pendientes con prioridad
-* Score de confianza por tarea
-* Alertas de revisión humana
-* Reglas aplicadas
-
-## 📁 Estructura del Proyecto
-
-```
-bot-cobertores-workflow/
-├── src/
-│   ├── gmail_capture/          # Captura de emails
-│   │   └── gmail_client.py
-│   ├── data_processing/        # Procesamiento
-│   │   ├── gpt_parser.py       # Parser Gemini (fallback)
-│   │   ├── attachment_processor.py  # Excel/PDF
-│   │   └── email_processor.py  # Orquestador principal
-│   ├── learning/               # Sistema de aprendizaje (NUEVO)
-│   │   └── historical_scraper.py   # Análisis histórico
-│   ├── database/               # Modelos y conexión
-│   │   ├── models.py           # 15 modelos (8 operación + 7 conocimiento)
-│   │   └── connection.py
-│   └── dashboard/              # Web dashboard
-│       ├── app.py
-│       └── templates/
-├── scripts/
-│   ├── migrate.py              # Migraciones automatizadas (NUEVO)
-│   └── generate_proposal_pdf.py
-├── migration_add_learning.sql  # SQL para tablas de aprendizaje (NUEVO)
-├── data/
-│   └── attachments/            # Archivos descargados
-├── credentials.json            # Gmail OAuth (gitignored)
-├── .env                        # Variables de entorno (gitignored)
-└── requirements.txt
-```
+🚀 Aplicaciones Comerciales
 
-## 🗄️ Base de Datos
+OpsMail AI es aplicable a cualquier industria que gestione solicitudes por email:
 
-### Tablas Operativas (8)
+🏭 Manufactura
 
-* `emails_procesados`: Emails capturados
-* `tareas`: Tareas extraídas (con `confianza_clasificacion`)
-* `archivos_adjuntos`: Attachments (con `confidence_score`)
-* `alertas`: Notificaciones
-* `configuracion`: Settings dinámicos
-* `log_sistema`: Logs de operaciones
-* Vistas SQL optimizadas
+📦 Logística
 
-### Tablas de Conocimiento (7 - NUEVO)
+🏗️ Construcción
 
-* `sender_profiles`: Perfiles de remitentes aprendidos
-* `internal_author_profiles`: Comportamiento de autores internos
-* `thread_patterns`: Análisis de hilos
-* `learned_rules`: Reglas generadas automáticamente
-* `learning_sessions`: Historial de aprendizaje
-* `keyword_patterns`: Keywords por categoría
-* `file_reviews`: Feedback loop para mejora continua
+🛒 Retail
 
-## 🎨 Características
+🌾 Agricultura
 
-### ✅ Implementadas
+💼 Servicios
 
-**Core:**
+Valor diferencial: el sistema aprende de la operación específica del cliente, no usa reglas genéricas.
 
-* Captura automática de emails con Gmail API
-* Extracción de datos con Gemini IA
-* Procesamiento de adjuntos Excel/PDF
-* Base de datos MySQL con 15 tablas
-* Dashboard web responsive
+🔮 Roadmap
 
-**Sistema de Aprendizaje (NUEVO):**
+Confirmaciones automáticas por email
 
-* 🧠 Análisis histórico de emails (1-12 meses configurables)
-* ⚙️ Generación automática de reglas con scoring
-* 🎯 Motor de decisión: reglas → IA fallback
-* 📊 Scoring de confianza por clasificación
-* ⚠️ Sistema de alertas para revisión humana
-* 📈 Feedback loop para mejora continua
+Notificaciones Slack / Discord
 
-**Otros:**
+Integración Google Calendar
 
-* Sistema de alertas para tareas urgentes
-* Manejo de rate limiting de API
-* Fallback inteligente para emails no estructurados
-* Logging completo de operaciones
+API REST
 
-### 🔮 Roadmap Futuro
+Multi-tenant SaaS
 
-* Envío automático de confirmaciones por email
-* Notificaciones en tiempo real (Slack/Discord)
-* Integración con Google Calendar
-* Auto-entrenamiento con feedback de usuarios
-* Descriptores de cargo automáticos (análisis de roles)
-* API REST para integraciones
-* Deploy en cloud (AWS/GCP)
-* Multi-tenant para SaaS
+Deploy cloud (AWS / GCP)
 
-## 🤝 Aplicaciones Comerciales
+👤 Autor
 
-Este sistema es aplicable a cualquier industria que procese solicitudes por email:
+Gonzalo Ulloa
+Desarrollador Python | Automatización Operacional con IA
 
-* 🏭 **Manufactura:** Órdenes de producción
-* 📦 **Logística:** Solicitudes de despacho
-* 🏗️ **Construcción:** Pedidos de materiales
-* 🛒 **Retail:** Órdenes de compra
-* 🌾 **Agricultura:** Planificación de cultivos
-* 💼 **Servicios:** Gestión de tickets
+GitHub: @GonzaloUlloaCL
+LinkedIn: Gonzalo Ulloa
 
-**Diferenciador clave:** Sistema que aprende de TU operación específica, no solo procesa.
+💬 ¿Próximo paso?
 
-**Valor para clientes:** 
+Este proyecto está listo para:
 
-* Setup: $2,000 - $4,000 USD
-* Soporte mensual: $150 - $300 USD
-* ROI: 3-6 meses
+Adaptarse a una operación real
 
-## 📈 Roadmap de Producto
+Prototiparse con datos del cliente
 
-### v1.0 - Sistema Base (✅ Completado)
-
-* Captura y procesamiento de emails
-* Extracción con IA
-* Dashboard básico
-
-### v2.0 - Sistema de Aprendizaje (✅ Completado)
-
-* Análisis histórico
-* Reglas automáticas
-* Motor de decisión inteligente
-* Scoring de confianza
-
-### v3.0 - Mejoras Operativas (En desarrollo)
-
-* Email automático de confirmación
-* Notificaciones Slack/Discord
-* Integración Google Calendar
-* Tests automatizados
-
-### v4.0 - Análisis Avanzado (Planeado)
-
-* Descriptores de cargo
-* Análisis de flujos de trabajo
-* Patrones de escalamiento
-* Optimización de procesos
-
-## 📝 Licencia
-
-MIT License - Ver archivo LICENSE
-
-## 👤 Autor
-
-**Gonzalo Ulloa**
-
-* GitHub: [@GonzaloUlloaCL](https://github.com/GonzaloUlloaCL)
-* LinkedIn: [Gonzalo Ulloa](https://www.linkedin.com/in/gonzalo-ulloa-g/)
-* Email: gonzalo.ulloa@usach.cl
-
-**Desarrollador Python** en transición a freelance, especializado en automatización operacional con IA.
-
----
-
-⭐ **Si este proyecto te fue útil, considera darle una estrella en GitHub**
-
-💼 **¿Interesado en implementar esto en tu empresa?** [Contáctame](mailto:gonzalo.ulloa@usach.cl)
+Evolucionar a producto interno o SaaS
