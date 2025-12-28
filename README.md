@@ -1,4 +1,4 @@
-# 🤖 Bot de Cobertores - Sistema de Automatización con IA
+        # 🤖 Bot de Cobertores - Sistema de Automatización con IA
 
 Sistema inteligente de procesamiento de emails operacionales con **aprendizaje automático de patrones** y extracción de datos usando IA.
 
@@ -53,14 +53,14 @@ Necesito cobertor para:
         Fase 0: Aprendizaje              Fase 1: Operación
 ┌─────────────────────────────┐    ┌──────────────────────────┐
 │  Gmail Histórico (1-12m)    │    │   Gmail (emails nuevos)  │
-│            ↓                 │    │           ↓              │
+│            ↓                │    │           ↓              │
 │  historical_scraper.py      │    │   email_processor.py     │
-│            ↓                 │    │           ↓              │
+│            ↓                │    │           ↓              │
 │  Análisis de patrones       │    │   rules_engine.py        │
 │  - Remitentes               │    │           ↓              │
 │  - Urgencias                │    │   ¿Regla conocida?       │
-│  - Tipos de solicitud       │    │   ├─ Sí → Aplicar regla │
-│            ↓                 │    │   └─ No → Usar Gemini   │
+│  - Tipos de solicitud       │    │   ├─ Sí → Aplicar regla  │
+│            ↓                │    │   └─ No → Usar Gemini    │
 │  Base de Conocimiento       │────┤           ↓              │
 │  - sender_profiles          │    │   Tarea en BD            │
 │  - learned_rules (16)       │    │   + Score confianza      │
